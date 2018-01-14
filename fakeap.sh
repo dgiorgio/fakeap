@@ -19,13 +19,19 @@ FAKEAP_SILENCE="${FAKEAP_SILENCE}"
 # Action Kill
 if [ "${FAKEAP_KILL}" == "1" ]; then
     kill -9 $(ps -ef | grep '\.fakeap' | grep -v grep | awk '{ print $2 }')
-    [ ! -z "${FAKEAP_INTERFACE}" ] && ifconfig ${FAKEAP_INTERFACE} down && ifconfig ${FAKEAP_INTERFACE} up
+    [ ! -z "${FAKEAP_INTERFACE}" ] && wondershaper clear ${FAKEAP_INTERFACE} \
+        && ifconfig ${FAKEAP_INTERFACE} down && ifconfig ${FAKEAP_INTERFACE} up
     systemctl restart network-manager
     iptables-restore < "${FAKEAP_HOME}/fakeap-iptables-save"
     kill -9 $(ps -ef | grep 'fakeap.sh' | grep -v grep | awk '{ print $2 }')
     exit 1
 fi
 
+set -euo pipefail
+
+mkdir -p "${FAKEAP_HOME}"
+
+_FAKEAP_START() {
 # CHECK VARS
 [ -z "${FAKEAP_RANGEIP}" ] && FAKEAP_RANGEIP="172.16.66"
 [ -z "${FAKEAP_CHANNEL}" ] && FAKEAP_CHANNEL="6"
@@ -34,11 +40,6 @@ fi
 [ -z "${FAKEAP_DHCP}" ] && FAKEAP_DHCP="dnsmasq"
 [ -z "${FAKEAP_SILENCE}" ] && FAKEAP_SILENCE="1"
 
-set -euo pipefail
-
-mkdir -p "${FAKEAP_HOME}"
-
-_FAKEAP_START() {
 # Edit dnsmasq configuration
 echo "
 log-facility=${FAKEAP_HOME}/dnsmasq.log
@@ -82,6 +83,11 @@ ssid=${FAKEAP_ESSID}
         iptables -A FORWARD -i "${FAKEAP_INTERFACE}" -o "${FAKEAP_GATEWAY}" -j ACCEPT
     fi
     echo '1' > /proc/sys/net/ipv4/ip_forward
+    # Limit Bandwidth
+    if [ ! -z "${FAKEAP_BANDWIDTH}" ]; then
+        wondershaper ${FAKEAP_INTERFACE} 500 100
+#        wondershaper ${FAKEAP_INTERFACE} ${FAKEAP_BANDWIDTH}
+    fi
     # Start FakeAP
     hostapd "${FAKEAP_HOME}/fakeap-hostapd.conf" -B &
     # Sniff
@@ -101,22 +107,48 @@ else
 Run with variables, eg:
 FAKEAP_INTERFACE="wlan0" FAKEAP_ESSID="wifipublic" ./fakeap.sh
 
-Required:
-FAKEAP_INTERFACE="wlan0" - default: none
-FAKEAP_ESSID="wifipublic" - default: none
+FAKEAP_KILL=1 FAKEAP_INTERFACE=wlan0 ./fakeap.sh
 
-Actions:
-FAKEAP_KILL="1" - default: none
+REQUIRED:
+Wireless to fakeap
+    FAKEAP_INTERFACE="wlan0" - default: none
 
-Optionals:
-FAKEAP_GATEWAY="eth0" - default: none
-FAKEAP_RANGEIP="172.16.99" - default: 172.16.66
-FAKEAP_CHANNEL="9" - default: 6
-FAKEAP_MAC="01:23:45:67:89:ab" - default: random using macchanger
-FAKEAP_PROGRAM="aircrack" - default: fakeapd
-FAKEAP_TERMINAL="1" - default: none
-FAKEAP_DHCP="dhcpcd" - default: dnsmasq
-FAKEAP_FAKEDNS="~/fakedns.conf" - default: none
-FAKEAP_SILENCE="0" - default: 1
+Fakeap ESSID
+    FAKEAP_ESSID="wifipublic" - default: none
+
+ACTIONS:
+Stop fakeap, recommended to combine FAKEAP_INTERFACE var.
+    FAKEAP_KILL="1" - default: none
+
+OPTIONALS:
+Gateway for fakeap
+    FAKEAP_GATEWAY="eth0" - default: none
+
+Range IP, dont put full address
+    FAKEAP_RANGEIP="172.16.99" - default: 172.16.66
+
+Wireless fakeap channel
+    FAKEAP_CHANNEL="9" - default: 6
+
+Fakeap wireless mac address
+    FAKEAP_MAC="01:23:45:67:89:ab" - default: random using macchanger
+
+Program to run fakeap
+    FAKEAP_PROGRAM="aircrack" - default: fakeapd
+
+Use external terminal with results
+    FAKEAP_TERMINAL="1" - default: none
+
+Program to run dhcp server
+    FAKEAP_DHCP="dhcpcd" - default: dnsmasq
+
+FakeDNS to fakeap
+    FAKEAP_FAKEDNS="~/fakedns.conf" - default: none
+
+Put 0 to verbose mode
+    FAKEAP_SILENCE="0" - default: 1
+
+Limit band on fakeap, recommended to 3G internet, put UP DOWN values in Kbit/s
+    FAKEAP_BANDWIDTH="500 100" - default: none
 '
 fi
