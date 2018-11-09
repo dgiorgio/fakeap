@@ -21,57 +21,57 @@ COLOR_RED='\033[0;31m'
 NC='\033[0m' # No Color
 
 _MAN() {
-echo -e '
+echo -e "
 ${COLOR_GREEN}Run with variables, eg:${NC}
   Start:
-    FAKEAP_INTERFACE="wlan0" FAKEAP_ESSID="wifipublic" ./fakeap.sh
+    FAKEAP_INTERFACE=\"wlan0\" FAKEAP_ESSID=\"wifipublic\" ./fakeap.sh
     or
-    FAKEAP_INTERFACE="wlan0" FAKEAP_ESSID="wifipublic" FAKEAP_GATEWAY="eth0" ./fakeap.sh
+    FAKEAP_INTERFACE=\"wlan0\" FAKEAP_ESSID=\"wifipublic\" FAKEAP_GATEWAY=\"eth0\" ./fakeap.sh
   Stop:
     FAKEAP_KILL=1 FAKEAP_INTERFACE=wlan0 ./fakeap.sh
 
 ${COLOR_RED}REQUIRED: ${NC}
 ${COLOR_GREEN}Wireless to fakeap ${NC}
-    FAKEAP_INTERFACE="wlan0" - default: none
+    FAKEAP_INTERFACE=\"wlan0\" - default: none
 
 ${COLOR_GREEN}Fakeap ESSID ${NC}
-    FAKEAP_ESSID="wifipublic" - default: none
+    FAKEAP_ESSID=\"wifipublic\" - default: none
 
 ${COLOR_RED}ACTIONS: ${NC}
 ${COLOR_GREEN}Stop fakeap, recommended to combine FAKEAP_INTERFACE var. ${NC}
-    FAKEAP_KILL="1" - default: none
+    FAKEAP_KILL=\"1\" - default: none
 
 ${COLOR_RED}OPTIONALS: ${NC}
 ${COLOR_GREEN}Gateway for fakeap ${NC}
-    FAKEAP_GATEWAY="eth0" - default: none
+    FAKEAP_GATEWAY=\"eth0\" - default: none
 
 ${COLOR_GREEN}Range IP, dont put full address ${NC}
-    FAKEAP_RANGEIP="172.16.99" - default: 172.16.66
+    FAKEAP_RANGEIP=\"172.16.99\" - default: 172.16.66
 
 ${COLOR_GREEN}Wireless fakeap channel ${NC}
-    FAKEAP_CHANNEL="9" - default: 6
+    FAKEAP_CHANNEL=\"9\" - default: 6
 
 ${COLOR_GREEN}Fakeap wireless mac address ${NC}
-    FAKEAP_MAC="01:23:45:67:89:ab" - default: random using macchanger
+    FAKEAP_MAC=\"01:23:45:67:89:ab\" - default: random using macchanger
 
 ${COLOR_GREEN}Program to run fakeap ${NC}
-    FAKEAP_PROGRAM="aircrack" - default: fakeapd
+    FAKEAP_PROGRAM=\"aircrack\" - default: fakeapd
 
 ${COLOR_GREEN}Use external terminal with results ${NC}
-    FAKEAP_TERMINAL="1" - default: none
+    FAKEAP_TERMINAL=\"1\" - default: none
 
 ${COLOR_GREEN}Program to run dhcp server ${NC}
-    FAKEAP_DHCP="dhcpcd" - default: dnsmasq
+    FAKEAP_DHCP=\"dhcpcd\" - default: dnsmasq
 
 ${COLOR_GREEN}FakeDNS to fakeap ${NC}
-    FAKEAP_FAKEDNS="~/fakedns.conf" - default: none
+    FAKEAP_FAKEDNS=\"~/fakedns.conf\" - default: none
 
 ${COLOR_GREEN}Put 0 to verbose mode ${NC}
-    FAKEAP_SILENCE="0" - default: 1
+    FAKEAP_SILENCE=\"0\" - default: 1
 
 ${COLOR_GREEN}Limit band on fakeap, recommended to 3G internet, put UP DOWN values in Kbit/s ${NC}
-    FAKEAP_BANDWIDTH="500 100" - default: none
-'
+    FAKEAP_BANDWIDTH=\"500 100\" - default: none
+"
 }
 
 # Action Kill
