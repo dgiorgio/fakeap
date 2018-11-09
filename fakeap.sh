@@ -22,6 +22,7 @@ NC='\033[0m' # No Color
 
 _MAN() {
 echo -e "
+${COLOR_RED}EXAMPLES: ${NC}
 ${COLOR_GREEN}Run with variables, eg:${NC}
   Start:
     FAKEAP_INTERFACE=\"wlan0\" FAKEAP_ESSID=\"wifipublic\" ./fakeap.sh
